@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-TW">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Light Control</title>
+
+</head>
+
+<body>
+    <style>
+        .btn {
+            user-select: none;
+            border: 0;
+            line-height: 2.5;
+            padding: 0 20px;
+            font-size: 1rem;
+            text-align: center;
+            color: #fff;
+            border-radius: 10px;
+            background-color: rgb(135, 135, 135);
+            box-shadow:
+                inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+                inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn:hover {
+            background-color: rgb(105, 105, 105);
+        }
+
+        .btn:active {
+            box-shadow: none;
+        }
+
+        strong {
+            font-size: 30px;
+        }
+        .alert {
+            user-select: none;
+            /*position: fixed;*/
+            margin: 10px 10%;
+            text-align: center;
+            padding: 10px;
+            width: 80%;
+            background-color: #ffffff;
+            color: white;
+            opacity: 0.8;
+            animation-name: alertAni;
+            animation-duration: 1s;
+            animation-delay: 2s;
+            animation-timing-function: ease-out;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+            border-radius: 10px;
+            border-width: 0px;
+        }
+
+        .open {
+            background-color: #48d743;
+        }
+
+        .close {
+            background-color: #d74343;
+        }
+
+        @keyframes alertAni {
+            from {
+                opacity: 0.8;
+            }
+
+            to {
+                opacity: 0;
+                /*display: none;*/
+            }
+        }
+        form {
+            text-align: center;
+        }
+        
+    </style>
+
+
+    <div class="alert-container">
+        {% with warnings = get_flashed_messages(category_filter=["open"]) %}
+        {% if warnings %}
+        <div class="alert open">
+            {% for msg in warnings %}
+            <strong>{{ msg }}</strong>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% with warnings = get_flashed_messages(category_filter=["close"]) %}
+        {% if warnings %}
+        <div class="alert close">
+            {% for msg in warnings %}
+            <strong>{{ msg }}</strong>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+    </div>
+    <div class="control">
+        <form action="/open" method="post">
+            <button class="btn" type="submit">Open</button>
+        </form>
+        <br>
+        <form action="/close" method="post">
+            <button class="btn" type="submit">Close</button>
+        </form>
+        <br>
+        <form action="/environment" method="post">
+            <button class="btn" type="submit">Enviroment Light</button>
+        </form>
+    </div>
+</body>
