@@ -1,4 +1,4 @@
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import time
 import os
 from flask import Flask, render_template, request, flash, Response, abort
@@ -69,22 +69,22 @@ def setBrightness(val):
 
 class LED:
     def __init__(self, pin:int=12, freq:int=100) -> None:
-        #GPIO.setup(pin, GPIO.OUT)
+        GPIO.setup(pin, GPIO.OUT)
         self.pin = pin
         self.freq = freq
-        #self.light = GPIO.PWM(pin, freq)
+        self.light = GPIO.PWM(pin, freq)
 
     def glow(self, brightness=100, seconds=2) -> None:
         f = self.freq * brightness / 100.0
         if (f > self.freq):
             f = self.freq
-        #self.light.start(f)
+        self.light.start(f)
         print("glow: ", f)
         time.sleep(2)
 
     def stop(self) -> None:
         print("sotp")
-        #self.light.stop()
+        self.light.stop()
         pass
 
 
@@ -95,7 +95,7 @@ def runServer():
     
 
 if __name__ == "__main__":
-    #GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.BOARD)
     
     led = LED(12, 100)
     server = Thread(target=runServer)
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                 led.glow(autoBright, 2)
     except KeyboardInterrupt:
         del led
-        #GPIO.cleanup()
+        GPIO.cleanup()
     
         
     #app.run("0.0.0.0", port=8080)
