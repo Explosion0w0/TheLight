@@ -8,23 +8,7 @@ import requests
 import time
 
 
-
-
-
-class VoiceControl:
-
-    def __init__(self, modelPath:str="", outputPath:str="recognized.txt") -> None:
-        self.model = vosk.Model(modelPath)
-        self.reconizer = vosk.KaldiRecognizer(self.model, 16000)
-        self.pAudio = pyaudio.PyAudio()
-        self.stream = self.pAudio.open(format=pyaudio.paInt16,
-                channels=1,
-                rate=16000,
-                input=True,
-                frames_per_buffer=8192)
-        self.outputPath = outputPath
-
-    def regulate(self, command:str) -> bool:
+def lightRegulate(command:str) -> bool:
         #開燈
         if "kaideng" in command:
             try:
@@ -87,6 +71,25 @@ class VoiceControl:
         else:
             pass
         return True
+
+
+
+class VoiceControl:
+
+    def __init__(self, regulateFunc, modelPath:str="", outputPath:str="recognized.txt") -> None:
+        self.model = vosk.Model(modelPath)
+        self.reconizer = vosk.KaldiRecognizer(self.model, 16000)
+        self.pAudio = pyaudio.PyAudio()
+        self.stream = self.pAudio.open(format=pyaudio.paInt16,
+                channels=1,
+                rate=16000,
+                input=True,
+                frames_per_buffer=8192)
+        self.outputPath = outputPath
+        self.regulate = regulateFunc
+
+
+
     def startThread(self):
         thread = Thread(target=self.start)
         thread.start()
@@ -181,7 +184,7 @@ class VoiceControl:
 
 
 if __name__ =="__main__":
-    vc = VoiceControl("vosk-model-small-cn-0.22", "reconized.txt")
+    vc = VoiceControl(lightRegulate, "vosk-model-small-cn-0.22", "reconized.txt")
     vc.startThread()
     print("OK")
     try:

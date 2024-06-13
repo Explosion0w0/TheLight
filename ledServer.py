@@ -3,15 +3,8 @@ import time
 import os
 from flask import Flask, render_template, request, flash, Response, abort
 from threading import Thread
+from LED import LED
 
-
-#LED_PIN = 12
-GPIO.setmode(GPIO.BOARD)
-#GPIO.setup(LED_PIN, GPIO.OUT)
-
-#freq = 100
-
-#LIGHT = GPIO.PWM(LED_PIN, freq)
 global bright
 bright = 100
 autoBright = 100
@@ -84,40 +77,13 @@ def setBrightness(val):
         print("set brightness fail")
         abort(400)
 
-
-
-
-class LED:
-    def __init__(self, pin:int=12, freq:int=100) -> None:
-        GPIO.setup(pin, GPIO.OUT)
-        self.pin = pin
-        self.freq = freq
-        self.light = GPIO.PWM(pin, freq)
-
-    def glow(self, brightness=100, seconds=2) -> None:
-        f = self.freq * brightness / 100.0
-        if (f > self.freq):
-            f = self.freq
-        self.light.start(f)
-        print("glow: ", f)
-        time.sleep(2)
-
-    def stop(self) -> None:
-        print("stop")
-        self.light.stop()
-        pass
-
-
 def runServer():
     global app
     app.run("0.0.0.0", port=8080)
-    
-    
+
 
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BOARD)
-    
-    led = LED(12, 100)
+    led = LED(32, 100)
     server = Thread(target=runServer)
     server.start()
     try:
@@ -131,8 +97,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         del led
         GPIO.cleanup()
-    
-        
-    #app.run("0.0.0.0", port=8080)
 
     os._exit(0)
