@@ -6,7 +6,7 @@ from threading import Thread
 
 
 #LED_PIN = 12
-#GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BOARD)
 #GPIO.setup(LED_PIN, GPIO.OUT)
 
 #freq = 100
@@ -33,11 +33,32 @@ def open():
     return render_template("index.html")
 
 
+@app.route("/up", methods=["GET", "POST"])
+def incBrightness():
+    global bright, userControl
+    bright += 10
+    if (bright > 100):
+        bright = 100
+    userControl = True
+    flash("Increase brightness", "open")
+    return render_template("index.html")
+
+
+@app.route("/down", methods=["GET", "POST"])
+def decBrightness():
+    global bright, userControl
+    bright -= 10
+    if (bright < 0):
+        bright = 0
+    userControl = True
+    flash("Decrease brightness", "open")
+    return render_template("index.html")
+
 @app.route("/close", methods=["GET", "POST"])
 def close():
     global bright, userControl
     bright = 0
-    userControl = False
+    userControl = True
     flash("Close the light", "close")
     return render_template("index.html")
 
@@ -60,7 +81,6 @@ def setBrightness(val):
         autoBright = v
         return "auto brightness set to " + str(v)
     except:
-
         print("set brightness fail")
         abort(400)
 
@@ -83,7 +103,7 @@ class LED:
         time.sleep(2)
 
     def stop(self) -> None:
-        print("sotp")
+        print("stop")
         self.light.stop()
         pass
 
@@ -103,8 +123,10 @@ if __name__ == "__main__":
     try:
         while True:
             if (userControl):
+                print("user", bright)
                 led.glow(bright, 2)
             else:
+                print("auto")
                 led.glow(autoBright, 2)
     except KeyboardInterrupt:
         del led
